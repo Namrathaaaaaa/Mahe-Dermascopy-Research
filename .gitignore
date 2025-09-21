@@ -1,0 +1,133 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Virtual environments
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Machine Learning Models
+*.pkl
+*.h5
+*.pt
+*.pth
+*.ckpt
+*.model
+*.weights
+*.joblib
+
+# Data files
+*.csv
+*.json
+*.parquet
+*.feather
+*.hdf5
+*.h5
+data/
+datasets/
+*.db
+*.sqlite3
+
+# Logs and outputs
+*.log
+logs/
+outputs/
+runs/
+wandb/
+mlruns/
+tensorboard_logs/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Configuration files with secrets
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.ini
+secrets.json
+
+# Generated figures (optional - you might want to track these)
+# paper_figures/
+# *.png
+# *.jpg
+# *.jpeg
+# *.pdf
+
+# Streamlit
+.streamlit/
+
+# Research specific
+experiments/
+checkpoints/
+results/
+wandb/
