@@ -162,4 +162,4 @@ The model is now trained and saved as `dermoscopy_swin_model.pkl`. You can:
 ---
 
 **Status: ✅ COMPLETE - Model successfully trained and saved!**
-# Mahe-Dermascopy-Research
+
