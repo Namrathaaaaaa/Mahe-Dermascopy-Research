@@ -49,8 +49,19 @@ Upload a dermoscopy image to get:
 
 # Load the pre-trained model
 @st.cache_resource
-def load_model(model_path="dermoscopy_swin_model.pkl"):
+def load_model(model_path=None):
     """Load the Swin Transformer-based dermoscopy model"""
+    
+    # Auto-select model path based on availability
+    if model_path is None:
+        if os.path.exists("dermoscopy_swin_model_cpu.pkl"):
+            model_path = "dermoscopy_swin_model_cpu.pkl"
+        elif os.path.exists("dermoscopy_swin_model.pkl"):
+            model_path = "dermoscopy_swin_model.pkl"
+        else:
+            st.sidebar.error("No model file found!")
+            return None
+    
     try:
         if not os.path.exists(model_path):
             st.sidebar.error(f"Model file {model_path} not found!")
@@ -67,31 +78,23 @@ def load_model(model_path="dermoscopy_swin_model.pkl"):
             device = torch.device('cpu')
             st.sidebar.info("💻 Using CPU inference")
             
-        # Try to load the full model from pickle with device mapping
+        # Load the model using torch.load (CPU-compatible model)
         st.sidebar.info(f"Loading Swin Transformer model from {model_path}...")
         
-        # Load model with proper device mapping to handle cross-device compatibility
-        # Since the model was saved with pickle, we need to handle device mapping properly
-        import io
-        
-        with open(model_path, 'rb') as f:
-            # Read the pickled data
-            buffer = f.read()
-            
-        # Create a BytesIO buffer and load with map_location
-        buffer_io = io.BytesIO(buffer)
-        
-        if device.type == 'cpu':
-            # Map everything to CPU if no GPU available (Docker case)
-            model = torch.load(buffer_io, map_location='cpu', weights_only=False)
+        if "cpu.pkl" in model_path:
+            # This is the CPU-compatible model saved with torch.save
+            model = torch.load(model_path, map_location=device, weights_only=False)
         else:
-            # Try to load on target device, fallback to CPU if needed
+            # Original pickle format - try with fallback
             try:
-                model = torch.load(buffer_io, map_location=device, weights_only=False)
-            except:
-                buffer_io.seek(0)  # Reset buffer position
-                model = torch.load(buffer_io, map_location='cpu', weights_only=False)
+                with open(model_path, 'rb') as f:
+                    model = pickle.load(f)
+                # Move to target device
                 model = model.to(device)
+            except Exception as pickle_error:
+                st.sidebar.warning(f"Pickle loading failed: {pickle_error}")
+                # Fallback to torch.load
+                model = torch.load(model_path, map_location=device, weights_only=False)
         
         # Set model to evaluation mode
         model.eval()
