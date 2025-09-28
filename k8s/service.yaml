@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: mahe-service
+  namespace: mahe-namespace
+spec:
+  type: LoadBalancer
+  selector:
+    app: mahe
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8501

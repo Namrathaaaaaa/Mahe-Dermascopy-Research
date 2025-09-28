@@ -1,0 +1,22 @@
+kind: Deployment 
+apiVersion: apps/v1
+metadata:
+  name: mahe-deployment
+  namespace: mahe-namespace
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mahe
+  template:
+    metadata:
+      labels:
+        app: mahe
+    spec:
+      containers:
+        - name: mahe
+          image: namratha3/dermascopy:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8501
+            
