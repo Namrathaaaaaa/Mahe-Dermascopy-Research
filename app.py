@@ -56,16 +56,7 @@ def load_model(model_path="dermoscopy_swin_model.pkl"):
             st.sidebar.error(f"Model file {model_path} not found!")
             return None
             
-        # Try to load the full model from pickle
-        st.sidebar.info(f"Loading Swin Transformer model from {model_path}...")
-        
-        with open(model_path, 'rb') as f:
-            model = pickle.load(f)
-        
-        # Set model to evaluation mode
-        model.eval()
-        
-        # Determine the best device
+        # Determine the best available device first
         if torch.backends.mps.is_available():
             device = torch.device('mps')
             st.sidebar.success("🚀 Using Apple Silicon (MPS) acceleration!")
@@ -75,8 +66,26 @@ def load_model(model_path="dermoscopy_swin_model.pkl"):
         else:
             device = torch.device('cpu')
             st.sidebar.info("💻 Using CPU inference")
+            
+        # Try to load the full model from pickle with device mapping
+        st.sidebar.info(f"Loading Swin Transformer model from {model_path}...")
         
-        model = model.to(device)
+        # Load model with proper device mapping to handle cross-device compatibility
+        with open(model_path, 'rb') as f:
+            # Use torch.load with map_location to handle device compatibility
+            if device.type == 'cpu':
+                # Map everything to CPU if no GPU available (Docker case)
+                model = torch.load(f, map_location='cpu', weights_only=False)
+            else:
+                # Try to load on target device, fallback to CPU if needed
+                try:
+                    model = torch.load(f, map_location=device, weights_only=False)
+                except:
+                    model = torch.load(f, map_location='cpu', weights_only=False)
+                    model = model.to(device)
+        
+        # Set model to evaluation mode
+        model.eval()
         
         # Add debug information about the model
         st.sidebar.success("✅ Swin Transformer model loaded successfully!")
