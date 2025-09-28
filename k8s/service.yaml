@@ -4,10 +4,12 @@ metadata:
   name: mahe-service
   namespace: mahe-namespace
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: mahe
   ports:
     - protocol: TCP
       port: 80
       targetPort: 8501
+      nodePort: 30001
+      
