@@ -71,18 +71,27 @@ def load_model(model_path="dermoscopy_swin_model.pkl"):
         st.sidebar.info(f"Loading Swin Transformer model from {model_path}...")
         
         # Load model with proper device mapping to handle cross-device compatibility
+        # Since the model was saved with pickle, we need to handle device mapping properly
+        import io
+        
         with open(model_path, 'rb') as f:
-            # Use torch.load with map_location to handle device compatibility
-            if device.type == 'cpu':
-                # Map everything to CPU if no GPU available (Docker case)
-                model = torch.load(f, map_location='cpu', weights_only=False)
-            else:
-                # Try to load on target device, fallback to CPU if needed
-                try:
-                    model = torch.load(f, map_location=device, weights_only=False)
-                except:
-                    model = torch.load(f, map_location='cpu', weights_only=False)
-                    model = model.to(device)
+            # Read the pickled data
+            buffer = f.read()
+            
+        # Create a BytesIO buffer and load with map_location
+        buffer_io = io.BytesIO(buffer)
+        
+        if device.type == 'cpu':
+            # Map everything to CPU if no GPU available (Docker case)
+            model = torch.load(buffer_io, map_location='cpu', weights_only=False)
+        else:
+            # Try to load on target device, fallback to CPU if needed
+            try:
+                model = torch.load(buffer_io, map_location=device, weights_only=False)
+            except:
+                buffer_io.seek(0)  # Reset buffer position
+                model = torch.load(buffer_io, map_location='cpu', weights_only=False)
+                model = model.to(device)
         
         # Set model to evaluation mode
         model.eval()
